@@ -1,12 +1,8 @@
-// prettyprint.h
+// prettyprint.hpp
 
 // Header guard
 #ifndef PRETTYPRINT_INCLUDED
 #define PRETTYPRINT_INCLUDED
-
-#ifndef __cplusplus
-#error "C++ compiler not detected"
-#endif // __cplusplus
 
 #include<iostream>
 #include<iterator>
