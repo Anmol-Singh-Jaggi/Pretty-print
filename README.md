@@ -1,6 +1,5 @@
 # Pretty-print
 A set of functions written for pretty-printing C++ STL container types using template metaprogramming.
 
-**Usage -:**
-
-Compile `example.cpp` using `-std=c++11` option.
+Refer to my [blog article][1] for understanding this.
+[1]:https://wordpress.com/
