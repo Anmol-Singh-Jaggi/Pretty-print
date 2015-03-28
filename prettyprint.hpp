@@ -22,10 +22,10 @@
 template<typename T1, size_t Size>void printarray( T1 const( & array )[Size] )
 {
 	std::cout << "[";
-	copy( array, array+Size-1, std::ostream_iterator<T1>( std::cout, ", " ) );
 	if ( Size )
 	{
-		std::cout << array[Size-1];
+		std::copy( array, array + Size - 1, std::ostream_iterator<T1>( std::cout, ", " ) );
+		std::cout << array[Size - 1]; // print the last element separately to avoid the extra characters following it.
 	}
 	std::cout << "]";
 }
@@ -41,10 +41,10 @@ template<typename T1, typename T2>std::ostream& operator <<( std::ostream& out, 
 template<typename T1>std::ostream& operator <<( std::ostream& out, const std::vector<T1>& object )
 {
 	out << "[";
-	copy( object.begin(), --object.end(), std::ostream_iterator<T1>( out, ", " ) );
 	if ( !object.empty() )
 	{
-		out << *--object.end(); // print the last element separately to avoid the extra characters after.
+		std::copy( object.begin(), --object.end(), std::ostream_iterator<T1>( out, ", " ) );
+		out << *--object.end(); // print the last element separately to avoid the extra characters following it.
 	}
 	out << "]";
 	return out;
@@ -54,9 +54,9 @@ template<typename T1>std::ostream& operator <<( std::ostream& out, const std::ve
 template<typename T1>std::ostream& operator <<( std::ostream& out, const std::set<T1>& object )
 {
 	out << "{";
-	copy( object.begin(), --object.end(), std::ostream_iterator<T1>( out, ", " ) );
 	if ( !object.empty() )
 	{
+		std::copy( object.begin(), --object.end(), std::ostream_iterator<T1>( out, ", " ) );
 		out << *--object.end();
 	}
 	out << "}";
@@ -67,9 +67,9 @@ template<typename T1>std::ostream& operator <<( std::ostream& out, const std::se
 template<typename T1, typename T2>std::ostream& operator <<( std::ostream& out, const std::map<T1, T2>& object )
 {
 	out << "|";
-	copy( object.begin(), --object.end(), std::ostream_iterator<T1>( out, ", " ) );
 	if ( !object.empty() )
 	{
+		std::copy( object.begin(), --object.end(), std::ostream_iterator<T1>( out, ", " ) );
 		out << *--object.end();
 	}
 	out << "|";
@@ -82,14 +82,14 @@ template<typename T1>std::ostream& operator <<( std::ostream& out, const std::st
 {
 	out << "[";
 	std::stack<T1> object_copy( object );
-	while ( object_copy.size()>1 ) // print the last element separately to avoid the extra characters after.
-	{
-		out << object_copy.top() << ", ";
-		object_copy.pop();
-	}
 	if ( !object_copy.empty() )
 	{
-		out << object_copy.top();
+		while ( object_copy.size() > 1 )
+		{
+			out << object_copy.top() << ", ";
+			object_copy.pop();
+		}
+		out << object_copy.top(); // print the last element separately to avoid the extra characters following it.
 		object_copy.pop();
 	}
 	out << "]";
@@ -102,13 +102,13 @@ template<typename T1>std::ostream& operator <<( std::ostream& out, const std::qu
 {
 	out << "[";
 	std::queue<T1> object_copy( object );
-	while ( object_copy.size()>1 )
-	{
-		out << object_copy.front() << ", ";
-		object_copy.pop();
-	}
 	if ( !object_copy.empty() )
 	{
+		while ( object_copy.size() > 1 )
+		{
+			out << object_copy.front() << ", ";
+			object_copy.pop();
+		}
 		out << object_copy.front();
 		object_copy.pop();
 	}
