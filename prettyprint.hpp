@@ -25,7 +25,7 @@ template<typename T1, size_t Size>void printarray( T1 const( & array )[Size], st
 	if ( Size )
 	{
 		std::copy( array, array + Size - 1, std::ostream_iterator<T1>( out, ", " ) );
-		out << array[Size - 1]; // print the last element separately to avoid the extra characters following it.
+		out << array[Size - 1]; // print the last element separately to avoid any trailing characters
 	}
 	out << "]";
 }
@@ -44,7 +44,7 @@ template<typename T1>std::ostream& operator <<( std::ostream& out, const std::ve
 	if ( !object.empty() )
 	{
 		std::copy( object.begin(), --object.end(), std::ostream_iterator<T1>( out, ", " ) );
-		out << *--object.end(); // print the last element separately to avoid the extra characters following it.
+		out << *--object.end(); // print the last element separately to avoid any trailing characters
 	}
 	out << "]";
 	return out;
@@ -89,7 +89,7 @@ template<typename T1>std::ostream& operator <<( std::ostream& out, const std::st
 			out << object_copy.top() << ", ";
 			object_copy.pop();
 		}
-		out << object_copy.top(); // print the last element separately to avoid the extra characters following it.
+		out << object_copy.top(); // print the last element separately to avoid any trailing characters
 		object_copy.pop();
 	}
 	out << "]";
