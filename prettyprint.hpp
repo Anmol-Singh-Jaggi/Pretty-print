@@ -14,7 +14,7 @@
 #include<stack>
 #include<queue>
 
-#define print(i) std::cout << "Line " << __LINE__ << " : " << #i" = " << i << std::endl
+#define print(i) std::cout << "Line " << __LINE__ << " : " << #i" = " << (i) << std::endl
 
 // print an array
 // Does not work on nested arrays !
