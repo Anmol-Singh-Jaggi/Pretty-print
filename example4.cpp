@@ -3,13 +3,19 @@ using namespace std;
 
 // Note : This file is NOT supposed to get compiled successfully.
 
-template<typename T1, size_t Size>ostream& operator <<( ostream& out, T1 const( & array )[Size] )
+template<typename T1, size_t arrSize>
+ostream& operator <<( ostream& out, T1 const( & arr )[arrSize] )
 {
 	out << "[";
-	copy( array, array + Size - 1, std::ostream_iterator<T1>( out, ", " ) );
-	if ( Size )
+	if ( arrSize )
 	{
-		out << array[Size - 1];
+		const char* separator = "";
+		for ( const auto& element : arr )
+		{
+			out << separator;
+			out << element;
+			separator = ", ";
+		}
 	}
 	out << "]";
 	return out;

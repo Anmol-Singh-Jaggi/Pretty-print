@@ -14,103 +14,126 @@
 #include<stack>
 #include<queue>
 
+
+// Macro to wrap the actual function calls around some extra useful information like the line number
+// on which they were called, and to insert some formatting too.
 #define print(i) std::cout << "Line " << __LINE__ << " : " << #i" = " << (i) << std::endl
 
-// print an array
-// Does not work on nested arrays !
-#define printarr(arr) std::cout << "Line " << __LINE__ << " : " << #arr" = ";printarray(arr);cout << std::endl;
-template<typename T1, size_t Size>void printarray( T1 const( & array )[Size], std::ostream& out = std::cout )
-{
-	out << "[";
-	if ( Size )
-	{
-		std::copy( array, array + Size - 1, std::ostream_iterator<T1>( out, ", " ) );
-		out << array[Size - 1]; // print the last element separately to avoid any trailing characters
-	}
-	out << "]";
-}
-
-// print a pair
-template<typename T1, typename T2>std::ostream& operator <<( std::ostream& out, const std::pair<T1, T2>& object )
+// Print a pair
+template<typename T1, typename T2>
+std::ostream& operator <<( std::ostream& out, const std::pair<T1, T2>& object )
 {
 	out << "( " << object.first << ", " << object.second << " )";
 	return out;
 }
 
-// print a vector
-template<typename T1>std::ostream& operator <<( std::ostream& out, const std::vector<T1>& object )
+// Print an array
+template < typename T1, size_t arrSize, typename = std::enable_if_t < !std::is_same<T1, char>::value >>
+std::ostream & operator <<( std::ostream& out, const T1( & arr )[arrSize] )
 {
 	out << "[";
-	if ( !object.empty() )
+	if ( arrSize )
 	{
-		std::copy( object.begin(), --object.end(), std::ostream_iterator<T1>( out, ", " ) );
-		out << *--object.end(); // print the last element separately to avoid any trailing characters
+		const char* separator = "";
+		for ( const auto& element : arr )
+		{
+			out << separator;
+			out << element;
+			separator = ", ";
+		}
 	}
 	out << "]";
 	return out;
 }
 
-// print a set
-template<typename T1>std::ostream& operator <<( std::ostream& out, const std::set<T1>& object )
+// Print a vector
+template<typename T1>
+std::ostream& operator <<( std::ostream& out, const std::vector<T1>& object )
+{
+	out << "[";
+	if ( !object.empty() )
+	{
+		const char* separator = "";
+		for ( const auto& element : object )
+		{
+			out << separator;
+			out << element;
+			separator = ", ";
+		}
+	}
+	out << "]";
+	return out;
+}
+
+// Print a set
+template<typename T1>
+std::ostream& operator <<( std::ostream& out, const std::set<T1>& object )
 {
 	out << "{";
 	if ( !object.empty() )
 	{
-		std::copy( object.begin(), --object.end(), std::ostream_iterator<T1>( out, ", " ) );
-		out << *--object.end();
+		const char* separator = "";
+		for ( const auto& element : object )
+		{
+			out << separator;
+			out << element;
+			separator = ", ";
+		}
 	}
 	out << "}";
 	return out;
 }
 
-// print a map
-template<typename T1, typename T2>std::ostream& operator <<( std::ostream& out, const std::map<T1, T2>& object )
+// Print a map
+template<typename T1, typename T2>
+std::ostream& operator <<( std::ostream& out, const std::map<T1, T2>& object )
 {
 	out << "|";
 	if ( !object.empty() )
 	{
-		std::copy( object.begin(), --object.end(), std::ostream_iterator<T1>( out, ", " ) );
-		out << *--object.end();
+		const char* separator = "";
+		for ( const auto& element : object )
+		{
+			out << separator;
+			out << element;
+			separator = ", ";
+		}
 	}
 	out << "|";
 	return out;
 }
 
-// print a stack
-
-template<typename T1>std::ostream& operator <<( std::ostream& out, const std::stack<T1>& object )
+// Print a stack
+template<typename T1>
+std::ostream& operator <<( std::ostream& out, const std::stack<T1>& object )
 {
 	out << "[";
 	std::stack<T1> object_copy( object );
-	if ( !object_copy.empty() )
+	const char* separator = "";
+	while ( !object_copy.empty() )
 	{
-		while ( object_copy.size() > 1 )
-		{
-			out << object_copy.top() << ", ";
-			object_copy.pop();
-		}
-		out << object_copy.top(); // print the last element separately to avoid any trailing characters
+		out << separator;
+		out << object_copy.top();
 		object_copy.pop();
+		separator = ", ";
 	}
 	out << "]";
 	return out;
 }
 
-// print a queue
-
-template<typename T1>std::ostream& operator <<( std::ostream& out, const std::queue<T1>& object )
+// Print a queue
+template<typename T1>
+std::ostream& operator <<( std::ostream& out, const std::queue<T1>& object )
 {
 	out << "[";
 	std::queue<T1> object_copy( object );
-	if ( !object_copy.empty() )
+	const char* separator = "";
+	while ( !object_copy.empty() )
 	{
-		while ( object_copy.size() > 1 )
-		{
-			out << object_copy.front() << ", ";
-			object_copy.pop();
-		}
+		out << separator;
 		out << object_copy.front();
 		object_copy.pop();
+		separator = ", ";
 	}
 	out << "]";
 	return out;
