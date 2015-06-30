@@ -13,7 +13,7 @@
 #include<set>
 #include<stack>
 #include<queue>
-
+#include<list>
 
 // Macro to wrap the actual function calls around some extra useful information like the line number
 // on which they were called, and to insert some formatting too.
@@ -32,15 +32,12 @@ template < typename T1, size_t arrSize, typename = std::enable_if_t < !std::is_s
 std::ostream & operator <<( std::ostream& out, const T1( & arr )[arrSize] )
 {
 	out << "[";
-	if ( arrSize )
+	const char* separator = "";
+	for ( const auto& element : arr )
 	{
-		const char* separator = "";
-		for ( const auto& element : arr )
-		{
-			out << separator;
-			out << element;
-			separator = ", ";
-		}
+		out << separator;
+		out << element;
+		separator = ", ";
 	}
 	out << "]";
 	return out;
@@ -51,15 +48,12 @@ template<typename T1>
 std::ostream& operator <<( std::ostream& out, const std::vector<T1>& object )
 {
 	out << "[";
-	if ( !object.empty() )
+	const char* separator = "";
+	for ( const auto& element : object )
 	{
-		const char* separator = "";
-		for ( const auto& element : object )
-		{
-			out << separator;
-			out << element;
-			separator = ", ";
-		}
+		out << separator;
+		out << element;
+		separator = ", ";
 	}
 	out << "]";
 	return out;
@@ -70,15 +64,12 @@ template<typename T1>
 std::ostream& operator <<( std::ostream& out, const std::set<T1>& object )
 {
 	out << "{";
-	if ( !object.empty() )
+	const char* separator = "";
+	for ( const auto& element : object )
 	{
-		const char* separator = "";
-		for ( const auto& element : object )
-		{
-			out << separator;
-			out << element;
-			separator = ", ";
-		}
+		out << separator;
+		out << element;
+		separator = ", ";
 	}
 	out << "}";
 	return out;
@@ -89,15 +80,12 @@ template<typename T1, typename T2>
 std::ostream& operator <<( std::ostream& out, const std::map<T1, T2>& object )
 {
 	out << "|";
-	if ( !object.empty() )
+	const char* separator = "";
+	for ( const auto& element : object )
 	{
-		const char* separator = "";
-		for ( const auto& element : object )
-		{
-			out << separator;
-			out << element;
-			separator = ", ";
-		}
+		out << separator;
+		out << element;
+		separator = ", ";
 	}
 	out << "|";
 	return out;
@@ -133,6 +121,22 @@ std::ostream& operator <<( std::ostream& out, const std::queue<T1>& object )
 		out << separator;
 		out << object_copy.front();
 		object_copy.pop();
+		separator = ", ";
+	}
+	out << "]";
+	return out;
+}
+
+// Print a list
+template<typename T1>
+std::ostream& operator <<( std::ostream& out, const std::list<T1>& object )
+{
+	out << "[";
+	const char* separator = "";
+	for ( const auto& element : object )
+	{
+		out << separator;
+		out << element;
 		separator = ", ";
 	}
 	out << "]";
