@@ -1,146 +1,89 @@
 // prettyprint.hpp
 
-// Header guard
 #ifndef PRETTYPRINT_INCLUDED
 #define PRETTYPRINT_INCLUDED
 
-#include<iostream>
-#include<iterator>
-#include<vector>
-#include<map>
-#include<string>
-#include<utility>
-#include<set>
-#include<stack>
-#include<queue>
-#include<list>
+
+#include <iterator>
+#include <iosfwd>
+#include <vector>
+#include <stack>
+#include <queue>
+
 
 // Macro to wrap the actual function calls around some extra useful information like the line number
 // on which they were called, and to insert some formatting too.
-#define print(i) std::cout << "Line " << __LINE__ << " : " << #i" = " << (i) << std::endl
+#define print(i) std::cout << "Line " << __LINE__ << " : " << #i " = " << (i) << std::endl
 
-// Print a pair
-template<typename T1, typename T2>
-std::ostream& operator <<( std::ostream& out, const std::pair<T1, T2>& object )
-{
-	out << "( " << object.first << ", " << object.second << " )";
-	return out;
-}
-
-// Print an array
-template < typename T1, size_t arrSize, typename = std::enable_if_t < !std::is_same<T1, char>::value >>
-std::ostream & operator <<( std::ostream& out, const T1( & arr )[arrSize] )
-{
-	out << "[";
-	const char* separator = "";
-	for ( const auto& element : arr )
-	{
-		out << separator;
-		out << element;
-		separator = ", ";
+#define PRETTYPRINT_GENERIC_CONTAINER_OUTPUT_NAMED_HOOK(obj, strm, whilehook, outhook, posthook) \
+	auto separator = "";                                                                           \
+	while(whilehook) {                                                                             \
+		(strm) << separator;                                                                         \
+		(strm) outhook;                                                                              \
+		(posthook);                                                                                  \
+		separator = ", ";                                                                            \
 	}
-	out << "]";
+
+#define PRETTYPRINT_GENERIC_CONTAINER_OUTPUT_NAMED(obj, strm) \
+	auto separator = "";                                        \
+	for(const auto & element : (obj)) {                         \
+		(strm) << separator << element;                           \
+		separator = ", ";                                         \
+	}
+
+#define PRETTYPRINT_GENERIC_CONTAINER_OUTPUT PRETTYPRINT_GENERIC_CONTAINER_OUTPUT_NAMED(object, out)
+
+
+template <class T1, class T2>
+std::ostream & operator<<(std::ostream & out, const std::pair<T1, T2> & object) {
+	out << '(' << object.first << ", " << object.second << ')';
 	return out;
 }
 
-// Print a vector
-template<typename T1>
-std::ostream& operator <<( std::ostream& out, const std::vector<T1>& object )
-{
-	out << "[";
-	const char* separator = "";
-	for ( const auto& element : object )
-	{
-		out << separator;
-		out << element;
-		separator = ", ";
-	}
-	out << "]";
+template <class T1, size_t arrSize, class = std::enable_if_t<!std::is_same<T1, char>::value>>
+std::ostream & operator<<(std::ostream & out, const T1(&object)[arrSize]) {
+	out << '[';
+	PRETTYPRINT_GENERIC_CONTAINER_OUTPUT
+	out << ']';
 	return out;
 }
 
-// Print a set
-template<typename T1>
-std::ostream& operator <<( std::ostream& out, const std::set<T1>& object )
-{
-	out << "{";
-	const char* separator = "";
-	for ( const auto& element : object )
-	{
-		out << separator;
-		out << element;
-		separator = ", ";
-	}
-	out << "}";
+
+/// Primary template for all self-respecting containers
+template <class... ContA, template <class...> class Cont, class = std::enable_if_t<!std::is_same<Cont<ContA...>, std::string>::value>>
+std::ostream & operator<<(std::ostream & out, const Cont<ContA...> & object) {
+	out << '[';
+	PRETTYPRINT_GENERIC_CONTAINER_OUTPUT
+	out << ']';
 	return out;
 }
 
-// Print a map
-template<typename T1, typename T2>
-std::ostream& operator <<( std::ostream& out, const std::map<T1, T2>& object )
-{
-	out << "|";
-	const char* separator = "";
-	for ( const auto& element : object )
-	{
-		out << separator;
-		out << element;
-		separator = ", ";
-	}
-	out << "|";
-	return out;
-}
+
+/// Wrappers
 
 // Print a stack
-template<typename T1>
-std::ostream& operator <<( std::ostream& out, const std::stack<T1>& object )
-{
-	out << "[";
-	std::stack<T1> object_copy( object );
-	const char* separator = "";
-	while ( !object_copy.empty() )
-	{
-		out << separator;
-		out << object_copy.top();
-		object_copy.pop();
-		separator = ", ";
-	}
-	out << "]";
+template <class... T1>
+std::ostream & operator<<(std::ostream & out, const std::stack<T1...> & object) {
+	out << '[';
+	auto object_copy(object);
+	PRETTYPRINT_GENERIC_CONTAINER_OUTPUT_NAMED_HOOK(object_copy, out, !object_copy.empty(), << object_copy.top(), object_copy.pop());
+	out << ']';
 	return out;
 }
 
 // Print a queue
-template<typename T1>
-std::ostream& operator <<( std::ostream& out, const std::queue<T1>& object )
-{
-	out << "[";
-	std::queue<T1> object_copy( object );
-	const char* separator = "";
-	while ( !object_copy.empty() )
-	{
-		out << separator;
-		out << object_copy.front();
-		object_copy.pop();
-		separator = ", ";
+#define PRETTYPRINT_QUEUE_CONTAINER_OUTPUT_NAMED(q, topfun)                                                                              \
+	template <class... T1>                                                                                                                 \
+	std::ostream & operator<<(std::ostream & out, const q<T1...> & object) {                                                               \
+		out << '[';                                                                                                                          \
+		auto object_copy(object);                                                                                                            \
+		PRETTYPRINT_GENERIC_CONTAINER_OUTPUT_NAMED_HOOK(object_copy, out, !object_copy.empty(), << object_copy.topfun(), object_copy.pop()); \
+		out << ']';                                                                                                                          \
+		return out;                                                                                                                          \
 	}
-	out << "]";
-	return out;
-}
 
-// Print a list
-template<typename T1>
-std::ostream& operator <<( std::ostream& out, const std::list<T1>& object )
-{
-	out << "[";
-	const char* separator = "";
-	for ( const auto& element : object )
-	{
-		out << separator;
-		out << element;
-		separator = ", ";
-	}
-	out << "]";
-	return out;
-}
+PRETTYPRINT_QUEUE_CONTAINER_OUTPUT_NAMED(std::queue, front)
+PRETTYPRINT_QUEUE_CONTAINER_OUTPUT_NAMED(std::priority_queue, top)
 
-#endif // PRETTYPRINT_INCLUDED
+
+#endif  // PRETTYPRINT_INCLUDED
